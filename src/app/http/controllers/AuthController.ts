@@ -64,7 +64,7 @@ export class AuthController {
     const userId = req.user?.id;
 
     if (!userId) {
-      sendErrorResponse(res, 'User ID is missing', 400);
+      sendErrorResponse(res, 'User ID is missing', 400);    
       return;
     }
 
@@ -75,35 +75,6 @@ export class AuthController {
       sendErrorResponse(res, 'Error while logging out' , 500);
     }
   }
-
-//   static async refreshToken(req: Request, res: Response): Promise<void> {
-//     const { refreshToken } = req.body;
-
-//     if (!refreshToken) {
-//       sendErrorResponse(res, 'Refresh token required', 400);
-//       return;
-//     }
-
-//     try {
-//       const payload = verifyRefreshToken(refreshToken) as { id: string; role: string };
-
-//       if (!payload?.id) {
-//         sendErrorResponse(res, 'Invalid refresh token payload', 403);
-//         return;
-//       }
-
-//       const storedToken = await redis.get(payload.id.toString());
-//       if (!storedToken || storedToken !== refreshToken) {
-//         sendErrorResponse(res, 'Invalid refresh token', 403);
-//         return;
-//       }
-
-//       const newAccessToken = generateAccessToken({ id: payload.id, role: payload.role });
-//       sendSuccessResponse(res, { accessToken: newAccessToken }, 'Refresh token successful.');
-//     } catch (err) {
-//         sendErrorResponse(res, 'Invalid refresh token', 403);
-//     }
-//   }
 
 static async refreshToken(req: Request, res: Response): Promise<void> {
     const { refreshToken } = req.body;
