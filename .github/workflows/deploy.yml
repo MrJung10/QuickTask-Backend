@@ -1,0 +1,35 @@
+name: Deploy Backend
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: quicktask
+        ports: ['5432:5432']
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: 18
+
+      - run: npm install
+      - run: npm test
+
+      - name: Build and push Docker image
+        run: |
+          docker build -t quicktask-api .
+          docker tag quicktask-api mydockerhub/quicktask-api:latest
+          docker push mydockerhub/quicktask-api:latest
