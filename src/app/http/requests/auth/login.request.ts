@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction, RequestHandler } from "express";
 import { check, validationResult } from "express-validator";
-import { sendError } from "../../../../utils/response.format";
+import { sendErrorResponse } from "../../../../utils/response.format";
 
 export const LoginRequest: RequestHandler[] = [
   check("email", "Email is required").notEmpty(),
@@ -13,7 +13,7 @@ export const LoginRequest: RequestHandler[] = [
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       const firstError = errors.array()[0];
-      sendError(res, firstError.msg, 400);
+      sendErrorResponse(res, firstError.msg, 400);
       return;
     }
     next();

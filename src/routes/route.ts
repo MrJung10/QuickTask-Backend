@@ -5,8 +5,8 @@ import taskRoutes from './task.routes.js';
 
 const router = Router();
 
-router.use('auth', authRoutes);
-router.use('project', projectRoutes);
-router.use('task', taskRoutes);
+router.use('/auth', authRoutes);
+router.use('/project', projectRoutes);
+router.use('/task', taskRoutes);
 
 export default router;
