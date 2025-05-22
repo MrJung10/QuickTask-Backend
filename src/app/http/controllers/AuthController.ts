@@ -74,6 +74,7 @@ export class AuthController {
       sendSuccessResponse(res, null, 'Logged out successfully.');
       return;
     } catch (error) {
+      console.log('Error while logging out:', error);
       sendErrorResponse(res, 'Error while logging out' , 500);
       return;
     }
@@ -100,6 +101,7 @@ static async refreshToken(req: Request, res: Response): Promise<void> {
       sendSuccessResponse(res, { accessToken }, 'Refresh token successful.');
       return;
     } catch (err) {
+      console.log('Error while verifying refresh token:', err);
       sendErrorResponse(res, 'Invalid refresh token', 401);
       return;
     }

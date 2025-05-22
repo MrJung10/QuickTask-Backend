@@ -128,6 +128,7 @@ export class TaskController {
     
           sendSuccessResponse(res, transformed, 'Task fetched successfully');
         } catch (error) {
+          console.log(error);
           next(error);
         }
       }
@@ -157,11 +158,6 @@ export class TaskController {
             sendErrorResponse(res, 'Unauthorized', 403);
             return;
           }
-    
-          const updatedTask = await prisma.task.update({
-            where: { id: taskId },
-            data: updateData,
-          });
 
           const fullTask = await prisma.task.findUnique({
             where: { id: task.id },

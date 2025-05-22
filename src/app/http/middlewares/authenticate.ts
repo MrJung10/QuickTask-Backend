@@ -16,6 +16,7 @@ export const authenticate = (req: Request, res: Response, next: NextFunction): v
     req.user = payload;
     next();
   } catch (err) {
+    console.error(err);
     res.status(401).json({ message: 'Unauthorized Access.' });
   }
 };

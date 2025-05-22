@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
-import { sendErrorResponse, sendSuccessResponse } from "utils/response.format";
+import { sendSuccessResponse } from "utils/response.format";
 import { MemberResource } from "../resources/MemberResource";
 
 const prisma = new PrismaClient();

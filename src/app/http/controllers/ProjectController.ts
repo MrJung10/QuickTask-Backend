@@ -5,6 +5,15 @@ import { ProjectResource } from "../resources/ProjectResource";
 
 const prisma = new PrismaClient();
 
+interface ProjectMemberInput {
+    userId: number;
+    user?: {
+      name: string;
+      email: string;
+    };
+    role: string;
+  }
+
 export class ProjectController {
 
     static async index(req: Request, res: Response, next: NextFunction): Promise<void> {

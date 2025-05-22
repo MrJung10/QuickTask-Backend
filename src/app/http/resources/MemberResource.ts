@@ -1,5 +1,4 @@
 import dayjs from 'dayjs';
-import { register } from 'module';
 
 export class MemberResource {
   static toJSON(member: any) {
