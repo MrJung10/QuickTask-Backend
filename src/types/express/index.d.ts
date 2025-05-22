@@ -9,6 +9,10 @@ declare global {
 
     interface Request {
       user?: UserPayload;
+      body: {
+        name: string;
+        description?: string;
+      }
     }
   }
 }

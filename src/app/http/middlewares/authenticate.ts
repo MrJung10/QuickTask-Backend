@@ -5,7 +5,7 @@ export const authenticate = (req: Request, res: Response, next: NextFunction): v
   const authHeader = req.headers.authorization;
 
   if (!authHeader) {
-    res.status(401).json({ message: 'Missing token' });
+    res.status(401).json({ message: 'Authorization header missing. Please provide a valid token' });
     return;
   }
 
@@ -16,6 +16,6 @@ export const authenticate = (req: Request, res: Response, next: NextFunction): v
     req.user = payload;
     next();
   } catch (err) {
-    res.status(401).json({ message: 'Invalid token' });
+    res.status(401).json({ message: 'Unauthorized Access.' });
   }
 };

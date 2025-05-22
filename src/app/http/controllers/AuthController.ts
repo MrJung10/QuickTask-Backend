@@ -33,6 +33,7 @@ export class AuthController {
       const user_details = { id: user.id, name: user.name, email: user.email, role: user.role };
 
       sendSuccessResponse(res, user_details, 'User registered successfully.');
+      return;
     } catch (error) {
       next(error);
     }
@@ -55,6 +56,7 @@ export class AuthController {
       const userDetails = { id: user.id, name: user.name, email: user.email, role: user.role };
 
       sendSuccessResponse(res, { accessToken, refreshToken, userDetails }, 'Login successful.');
+      return;
     } catch (error) {
       next(error);
     }
@@ -71,8 +73,10 @@ export class AuthController {
     try {
       await redis.del(userId.toString());
       sendSuccessResponse(res, null, 'Logged out successfully.');
+      return;
     } catch (error) {
       sendErrorResponse(res, 'Error while logging out' , 500);
+      return;
     }
   }
 
