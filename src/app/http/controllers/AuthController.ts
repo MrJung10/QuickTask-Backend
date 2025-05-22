@@ -4,7 +4,6 @@ import bcrypt from 'bcrypt';
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from 'utils/jwt';
 import redis from 'config/redis';
 import { sendErrorResponse, sendSuccessResponse } from 'utils/response.format';
-import { send } from 'process';
 
 const prisma = new PrismaClient();
 
