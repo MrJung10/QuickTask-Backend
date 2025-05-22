@@ -1,5 +1,4 @@
 import dayjs from "dayjs";
-import { create } from "domain";
 
 export class ProjectResource {
     static toJSON(project: any) {

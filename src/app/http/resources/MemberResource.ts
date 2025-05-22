@@ -8,7 +8,7 @@ export class MemberResource {
       name: member.name,
       email: member.email,
       registeredAt: dayjs(member.createdAt).format('YYYY-MM-DD HH:mm:ss'),
-      memberships: member.memberships.map((membership: any) => ({
+      projectMemberships: member.memberships.map((membership: any) => ({
         role: membership.role,
         project: {
           id: membership.project.id,
