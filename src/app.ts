@@ -20,16 +20,10 @@ app.use(express.json());
 const limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 100 });
 app.use(limiter);
 
-// Error handler
-app.use(errorHandler);
-
 // Routes
 app.use('/api', router);
 
-// Error handler
-app.use((err: Error, req: Request, res: Response) => {
-  console.error(err.stack);
-  res.status(500).json({ message: 'Something went wrong!' });
-});
+// Global Error handler
+app.use(errorHandler);
 
 export default app;

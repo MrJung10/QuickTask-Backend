@@ -83,7 +83,7 @@ docker build -t quicktask-api .
 docker run -p 3000:3000 --env-file .env quicktask-api
 ```
 
-📦 Available Scripts
+## 📦 Available Scripts
 | Script          | Description               |
 | --------------- | ------------------------- |
 | `npm run dev`   | Start in development mode |

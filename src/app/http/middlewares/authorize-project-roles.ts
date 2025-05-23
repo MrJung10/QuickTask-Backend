@@ -9,8 +9,6 @@ export function requireProjectRole(roles: Role[]) {
       const projectId = req.params.id;
       const userId = req.user?.id;
 
-      console.log(projectId, userId);
-
       if (!userId || !projectId) {
         sendErrorResponse(res, 'Invalid user or project ID. ', 400);
         return;
