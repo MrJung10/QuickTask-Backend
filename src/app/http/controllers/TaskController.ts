@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, TaskStatus } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
 import { sendErrorResponse, sendSuccessResponse } from "utils/response.format";
 import { TaskResource } from "../resources/TaskResource";
@@ -8,6 +8,79 @@ import { TaskCommentResource } from "../resources/TaskCommentResource";
 const prisma = new PrismaClient();
 
 export class TaskController {
+      static async search(req: Request, res: Response) {
+        try {
+          const { keyword } = req.query;
+      
+          const tasks = await prisma.task.findMany({
+            where: {
+              title: {
+                contains: String(keyword),
+                mode: 'insensitive',
+              },
+            },
+            include: { assignee: true, project: true },
+          });
+      
+          sendSuccessResponse(res, tasks, 'Tasks fetched successfully');
+          return;
+        } catch (error) {
+          console.error('Search error:', error);
+          sendErrorResponse(res, 'Something went wrong', 500);
+          return;
+        }
+      }
+
+      static async filter(req: Request, res: Response): Promise<void> {
+        try {
+          const { status, assigneeId, dueDate } = req.query;
+      
+          const filters: any = {};
+      
+          // Normalize status
+          if (status && typeof status === 'string') {
+            const normalizedStatus = status.toUpperCase();
+            if (Object.values(TaskStatus).includes(normalizedStatus as TaskStatus)) {
+              filters.status = normalizedStatus as TaskStatus;
+            } else {
+              sendErrorResponse(res, 'Invalid task status provided. Status must be one of TODO, IN_PROGRESS, REVIEW, DONE', 400);
+              return;
+            }
+          }
+      
+          // Filter by assigneeId
+          if (assigneeId && !isNaN(Number(assigneeId))) {
+            filters.assigneeId = Number(assigneeId);
+          }
+      
+          // Filter by dueDate (ISO format recommended)
+          if (dueDate) {
+            const date = new Date(dueDate as string);
+            if (!isNaN(date.getTime())) {
+              filters.dueDate = date;
+            } else {
+              sendErrorResponse(res, 'Invalid dueDate format', 400);
+              return
+            }
+          }
+      
+          const tasks = await prisma.task.findMany({
+            where: filters,
+            include: {
+              assignee: true,
+              project: true,
+            },
+          });
+      
+          sendSuccessResponse(res, tasks, 'Tasks fetched successfully');
+          return;
+        } catch (error) {
+          console.error('Task filter error:', error);
+          sendErrorResponse(res, 'Something went wrong', 500);
+          return;
+        }
+      }
+
       static async create(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
           const { id: projectId } = req.params;

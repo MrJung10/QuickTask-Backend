@@ -10,6 +10,10 @@ import { Router } from "express";
 
 const router = Router();
 
+// Task filter and search
+router.get('/tasks/search', authenticate, TaskController.search);
+router.get('/tasks/filter', authenticate, TaskController.filter);
+
 router.post('/:id/tasks', CreateTaskRequest, authenticate, authorize([Role.ADMIN, Role.MEMBER]), TaskController.create);
 router.get('/:id/tasks', authenticate, authorize([Role.ADMIN, Role.MEMBER]), TaskController.index);
 router.get('/:id/tasks/:taskId', authenticate, authorize([Role.ADMIN, Role.MEMBER]), TaskController.show);
