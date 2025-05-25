@@ -3,6 +3,8 @@ import { NextFunction, Request, Response } from "express";
 import { sendErrorResponse, sendSuccessResponse } from "utils/response.format";
 import { TaskResource } from "../resources/TaskResource";
 import { TaskCommentResource } from "../resources/TaskCommentResource";
+import { TaskFilter } from "types/task";
+import { normalizeDueDate } from "utils/date";
 
 
 const prisma = new PrismaClient();
@@ -35,7 +37,7 @@ export class TaskController {
         try {
           const { status, assigneeId, dueDate } = req.query;
       
-          const filters: any = {};
+          const filters: TaskFilter = {};
       
           // Normalize status
           if (status && typeof status === 'string') {
@@ -49,8 +51,8 @@ export class TaskController {
           }
       
           // Filter by assigneeId
-          if (assigneeId && !isNaN(Number(assigneeId))) {
-            filters.assigneeId = Number(assigneeId);
+          if (assigneeId && typeof assigneeId === 'string') {
+            filters.assigneeId = assigneeId;
           }
       
           // Filter by dueDate (ISO format recommended)
@@ -109,8 +111,8 @@ export class TaskController {
               title,
               description,
               priority,
-              status,
-              dueDate,
+              status: status ?? TaskStatus.TODO,
+              dueDate: normalizeDueDate(dueDate),
               projectId,
               assigneeId,
             },
@@ -210,7 +212,6 @@ export class TaskController {
         try {
           const { taskId } = req.params;
           const user = req.user;
-          const updateData = req.body;
 
           if (!taskId) {
             sendErrorResponse(res, 'Task ID is required', 400);

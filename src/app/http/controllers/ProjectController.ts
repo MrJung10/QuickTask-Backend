@@ -3,18 +3,10 @@ import { Request, Response, NextFunction } from 'express';
 import { sendErrorResponse, sendSuccessResponse } from "utils/response.format";
 import { ProjectResource } from "../resources/ProjectResource";
 import { ProjectDetailsResource } from "../resources/ProjectDetailsResource";
+import { MemberInput } from "types/memberInput";
+import { ProjectUpdate } from "types/project";
 
 const prisma = new PrismaClient();
-
-interface ProjectMemberInput {
-    userId: number;
-    user?: {
-      name: string;
-      email: string;
-    };
-    role: string;
-  }
-
 export class ProjectController {
 
       static async index(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -181,7 +173,7 @@ export class ProjectController {
                 name: project.owner.name,
                 email: project.owner.email,
             },
-            members: project.members.map((member: any) => ({
+            members: project.members.map((member: { userId: string; user: { id: string; name: string; email: string; role: Role}; role: Role }) => ({
                 id: member.userId,
                 name: member.user.name,
                 email: member.user.email,
@@ -213,15 +205,15 @@ export class ProjectController {
           }
       
           // Filter out the owner if they are accidentally added to members
-          const sanitizedMembers = members
-            .filter((m: any) => m.id !== user.id)
+          const sanitizedMembers: MemberInput[] = members
+            .filter((m: MemberInput) => m.id !== user.id)
             .filter(
-              (m: any, index: number, self: any[]) =>
+              (m: MemberInput, index: number, self: MemberInput[]) =>
                 self.findIndex((x) => x.id === m.id) === index
-            );
+          );
 
           // Validate startDate and deadline
-          const updates: any = { name, description };
+          const updates: ProjectUpdate = { name, description };
           if (startDate) {
             if (isNaN(Date.parse(startDate))) {
               sendErrorResponse(res, 'Invalid startDate format', 400);
@@ -256,7 +248,7 @@ export class ProjectController {
             // Add new members
             if (sanitizedMembers.length > 0) {
               await tx.projectMember.createMany({
-                data: sanitizedMembers.map((m: any) => ({
+                data: sanitizedMembers.map((m: MemberInput) => ({
                   projectId: id,
                   userId: m.id,
                   role: m.role,
@@ -334,7 +326,10 @@ export class ProjectController {
             return;
           }
       
-          const bulkCreate = members.map((member: any) => ({
+          const bulkCreate = members.map((member: {
+            userId: string;
+            role: string;
+          }) => ({
             userId: member.userId,
             projectId: id,
             role: member.role,

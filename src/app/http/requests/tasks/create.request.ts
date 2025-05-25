@@ -14,7 +14,7 @@ export const CreateTaskRequest: RequestHandler[] = [
     .optional()
     .isIn(["TODO", "IN_PROGRESS", "REVIEW", "DONE"]),
   check("dueDate", "Due date is required").not().isEmpty(),
-  check("dueDate", "Due date must be a valid ISO date").isISO8601(),
+  // check("dueDate", "Due date must be a valid ISO date").isISO8601(),
 
 
   check("assigneeId", "Assignee ID must be a string")
