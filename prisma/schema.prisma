@@ -54,6 +54,8 @@ model Project {
   name        String
   description String?
   ownerId     String
+  startDate   DateTime?
+  deadline    DateTime?
   createdAt   DateTime         @default(now())
 
   // Relations

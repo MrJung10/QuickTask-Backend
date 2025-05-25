@@ -2,10 +2,11 @@ import { CorsOptions } from "cors";
 
 const corsOptions: CorsOptions = {
   // Allow all domains
+  // origin: ['http://localhost:3000'],
   origin: "*",
 
   // Specify allowed HTTP methods
-  methods: ["GET", "POST"],
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
 
   // Specify allowed headers
   allowedHeaders: ["Content-Type", "Authorization"],

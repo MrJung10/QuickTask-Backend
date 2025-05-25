@@ -5,6 +5,8 @@ import { sendErrorResponse } from "utils/response.format";
 export const CreateProjectRequest: RequestHandler[] = [
   check("name", "Name is required").not().isEmpty(),
   check("description", "Description is required").not().isEmpty(),
+  check("startDate", "Start date is required").not().isEmpty(),
+  check("deadline", "End date is required").not().isEmpty(),
   check("members", "Members is required").not().isEmpty(),
   check("members", "Members must be an array").isArray(),
   check("members.*.userId", "Member userId is required").not().isEmpty(),

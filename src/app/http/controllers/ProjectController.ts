@@ -38,6 +38,7 @@ export class ProjectController {
                       id: true,
                       name: true,
                       email: true,
+                      role: true
                     },
                   },
                 },
@@ -56,7 +57,16 @@ export class ProjectController {
 
     static async create(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-          const { name, description, members = [] } = req.body;
+          const { name, description, members = [], startDate, deadline } = req.body;
+
+          if (!startDate || isNaN(Date.parse(startDate))) {
+            sendErrorResponse(res, 'Invalid or missing startDate', 400);
+            return;
+          }
+          if (!deadline || isNaN(Date.parse(deadline))) {
+            sendErrorResponse(res, 'Invalid or missing deadline', 400);
+            return;
+          }
       
           const authUser = req.user;
 
@@ -70,20 +80,28 @@ export class ProjectController {
               name,
               description,
               ownerId: authUser.id,
+              startDate: new Date(startDate),
+              deadline: new Date(deadline),
               members: {
-                create: {
-                  userId: authUser.id,
-                  role: Role.ADMIN,
-                },
-                ...members.map((member: { userId: string; role: Role }) => ({
-                    userId: member.userId,
-                    role: member.role
-                }))
+                create: [
+                  {
+                    userId: authUser.id,
+                    role: Role.ADMIN,
+                  },
+                  ...members.map((member: { userId: string; role: Role }) => ({
+                      userId: member.userId,
+                      role: member.role
+                  })),
+                ],
               },
             },
             include: {
               owner: true,
-              members: true,
+              members: {
+                include: {
+                  user: true,
+                }
+              },
             },
           });
       
@@ -119,7 +137,7 @@ export class ProjectController {
     static async update(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
           const { id } = req.params;
-          const { name, description, members = [] } = req.body;
+          const { name, description, members = [], startDate, deadline } = req.body;
           const user = req.user;
       
           const existing = await prisma.project.findUnique({
@@ -139,12 +157,30 @@ export class ProjectController {
               (m: any, index: number, self: any[]) =>
                 self.findIndex((x) => x.userId === m.userId) === index
             );
+
+          // Validate startDate and deadline
+          const updates: any = { name, description };
+          if (startDate) {
+            if (isNaN(Date.parse(startDate))) {
+              sendErrorResponse(res, 'Invalid startDate format', 400);
+              return;
+            }
+            updates.startDate = new Date(startDate);
+          }
+
+          if (deadline) {
+            if (isNaN(Date.parse(deadline))) {
+              sendErrorResponse(res, 'Invalid deadline format', 400);
+              return;
+            }
+            updates.deadline = new Date(deadline);
+          }
       
           // Transaction: Update project + replace members (excluding owner)
           const updated = await prisma.$transaction(async (tx) => {
             await tx.project.update({
               where: { id },
-              data: { name, description },
+              data: updates,
             });
       
             // Delete all members except owner

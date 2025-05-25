@@ -6,6 +6,12 @@ export class MemberResource {
       id: member.id,
       name: member.name,
       email: member.email,
+      shortName: member.name
+            .split(' ')
+            .filter(Boolean)
+            .map((part: string) => part.charAt(0).toUpperCase())
+            .slice(0, 2)
+            .join(''),
       registeredAt: dayjs(member.createdAt).format('YYYY-MM-DD HH:mm:ss'),
       projectMemberships: member.memberships.map((membership: any) => ({
         role: membership.role,

@@ -3,6 +3,6 @@ import { UserController } from "app/http/controllers/UserController";
 
 const router = Router();
 
-router.post('/get-all-members', UserController.getAllMembers);
+router.get('/get-all-members', UserController.getAllMembers);
 
 export default router;
