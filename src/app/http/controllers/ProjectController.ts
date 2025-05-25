@@ -2,6 +2,7 @@ import { PrismaClient, Role } from "@prisma/client";
 import { Request, Response, NextFunction } from 'express';
 import { sendErrorResponse, sendSuccessResponse } from "utils/response.format";
 import { ProjectResource } from "../resources/ProjectResource";
+import { ProjectDetailsResource } from "../resources/ProjectDetailsResource";
 
 const prisma = new PrismaClient();
 
@@ -16,7 +17,7 @@ interface ProjectMemberInput {
 
 export class ProjectController {
 
-    static async index(req: Request, res: Response, next: NextFunction): Promise<void> {
+      static async index(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
           const user = req.user;
       
@@ -53,9 +54,70 @@ export class ProjectController {
         } catch (error) {
           next(error);
         }
+      }
+
+    static async details(req: Request, res: Response, next: NextFunction): Promise<void> {
+      try {
+        const { id } = req.params;
+        const authUser = req.user;
+    
+        if (!authUser || !authUser.id) {
+          sendErrorResponse(res, 'Unauthorized: User not found', 401);
+          return;
+        }
+    
+        const project = await prisma.project.findUnique({
+          where: {
+            id,
+            members: {
+              some: {
+                userId: authUser.id,
+              },
+            },
+          },
+          include: {
+            members: {
+              include: {
+                user: {
+                  select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                    role: true,
+                  },
+                },
+              },
+            },
+            tasks: {
+              include: {
+                assignee: {
+                  select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                    role: true,
+                  },
+                },
+              },
+              orderBy: {
+                createdAt: 'desc',
+              },
+            },
+          },
+        });
+    
+        if (!project) {
+          sendErrorResponse(res, 'Project not found or unauthorized', 404);
+          return;
+        }
+    
+        sendSuccessResponse(res, ProjectDetailsResource.toJSON(project), 'Project details fetched successfully');
+      } catch (error) {
+        next(error);
+      }
     }
 
-    static async create(req: Request, res: Response, next: NextFunction): Promise<void> {
+      static async create(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
           const { name, description, members = [], startDate, deadline } = req.body;
 
@@ -132,9 +194,9 @@ export class ProjectController {
         } catch (error) {
           next(error);
         }
-    }
+      }
 
-    static async update(req: Request, res: Response, next: NextFunction): Promise<void> {
+      static async update(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
           const { id } = req.params;
           const { name, description, members = [], startDate, deadline } = req.body;
@@ -152,10 +214,10 @@ export class ProjectController {
       
           // Filter out the owner if they are accidentally added to members
           const sanitizedMembers = members
-            .filter((m: any) => m.userId !== user.id)
+            .filter((m: any) => m.id !== user.id)
             .filter(
               (m: any, index: number, self: any[]) =>
-                self.findIndex((x) => x.userId === m.userId) === index
+                self.findIndex((x) => x.id === m.id) === index
             );
 
           // Validate startDate and deadline
@@ -196,7 +258,7 @@ export class ProjectController {
               await tx.projectMember.createMany({
                 data: sanitizedMembers.map((m: any) => ({
                   projectId: id,
-                  userId: m.userId,
+                  userId: m.id,
                   role: m.role,
                 })),
               });
@@ -260,7 +322,7 @@ export class ProjectController {
       }      
 
 
-    static async inviteMembers(req: Request, res: Response, next: NextFunction): Promise<void> {
+      static async inviteMembers(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
           const { id } = req.params; // projectId
           const { members } = req.body;
@@ -287,6 +349,6 @@ export class ProjectController {
         } catch (error) {
           next(error);
         }
-    }      
+      }      
       
 }

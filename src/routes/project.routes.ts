@@ -10,6 +10,7 @@ import { Router } from "express";
 const router = Router();
 
 router.get('/', authenticate, ProjectController.index);
+router.get('/:id', authenticate, ProjectController.details);
 router.post('/', CreateProjectRequest, authenticate, authorize(['ADMIN']), ProjectController.create);
 router.put('/:id', UpdateProjectRequest, authenticate, requireProjectRole(['ADMIN']), ProjectController.update);
 router.delete('/:id', authenticate, ProjectController.delete);
