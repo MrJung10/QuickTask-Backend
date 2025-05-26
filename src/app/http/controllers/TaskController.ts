@@ -311,6 +311,11 @@ export class TaskController {
               comments: true,
             },
           });
+
+          if (!fullTask) {
+            sendErrorResponse(res, 'Task not found', 404);
+            return;
+          }
       
           const transformed = TaskResource.toObject(fullTask);
       
