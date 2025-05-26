@@ -21,6 +21,7 @@ export const DashboardController = {
         select: {
           id: true,
           name: true,
+          description: true,
           deadline: true,
           _count: {
             select: { members: true },
@@ -31,6 +32,7 @@ export const DashboardController = {
       const formattedProjects = ongoingProjects.map(project => ({
         id: project.id,
         name: project.name,
+        description: project.description,
         deadline: project.deadline,
         memberCount: project._count.members,
       }));
