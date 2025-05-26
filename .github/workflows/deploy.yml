@@ -6,6 +6,16 @@ on:
       - main
   release:
     types: [published]
+  workflow_dispatch: # Allows manual triggering
+    inputs:
+      run_migrations:
+        description: 'Run migrations only'
+        required: false
+        default: 'false'
+      run_seeder:
+        description: 'Run seeder only'
+        required: false
+        default: 'false'
 
 jobs:
   backend:
@@ -52,6 +62,23 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Generate Prisma client
+        run: npx prisma generate
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+      - name: Run migrations
+        if: ${{ github.event_name != 'workflow_dispatch' || github.event.inputs.run_migrations == 'true' }}
+        run: npx prisma migrate deploy
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+      - name: Run seeder
+        if: ${{ github.event_name != 'workflow_dispatch' || github.event.inputs.run_seeder == 'true' }}
+        run: npm run seed
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
       # - name: Run tests
       #   run: |
       #     if [ -f "package.json" ] && grep -q '"test":' package.json; then
@@ -60,9 +87,9 @@ jobs:
       #     else
       #       echo "No tests found. Skipping..."
       #     fi
-        env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/quicktask
-          REDIS_URL: redis://localhost:6379
+      #   env:
+      #     DATABASE_URL: postgresql://postgres:postgres@localhost:5432/quicktask
+      #     REDIS_URL: redis://localhost:6379
 
       - name: Build project
         run: npm run build
@@ -80,7 +107,15 @@ jobs:
 
       - name: Deploy to Render
         run: |
-          curl -X POST \
-          -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
-          -H "Accept: application/json" \
-          https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/deploys
+          response=$(curl -s -o response.txt -w "%{http_code}" \
+            -X POST \
+            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+            -H "Accept: application/json" \
+            https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/deploys)
+          if [ "$response" -ne 201 ]; then
+            echo "Deployment failed with status $response"
+            cat response.txt
+            exit 1
+          else
+            echo "Deployment triggered successfully"
+          fi
