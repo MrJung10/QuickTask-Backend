@@ -1,9 +1,9 @@
 import { PrismaClient, Role } from '@prisma/client';
 import { Request, Response, NextFunction } from 'express';
 import bcrypt from 'bcrypt';
-import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from 'utils/jwt';
-import redis from 'config/redis';
-import { sendErrorResponse, sendSuccessResponse } from 'utils/response.format';
+import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../../../utils/jwt.js';
+import redis from '../../../config/redis.js';
+import { sendErrorResponse, sendSuccessResponse } from '../../../utils/response.format.js';
 
 const prisma = new PrismaClient();
 

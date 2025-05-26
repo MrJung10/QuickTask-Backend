@@ -1,11 +1,11 @@
 import { Role } from "@prisma/client";
-import { TaskController } from "app/http/controllers/TaskController";
-import { authenticate } from "app/http/middlewares/authenticate";
-import { authorize } from "app/http/middlewares/authorize";
-import { CreateCommentRequest } from "app/http/requests/comments/create.request";
-import { UpdateCommentRequest } from "app/http/requests/comments/update.request";
-import { CreateTaskRequest } from "app/http/requests/tasks/create.request";
-import { UpdateTaskRequest } from "app/http/requests/tasks/update.request";
+import { TaskController } from "../app/http/controllers/TaskController.js";
+import { authenticate } from "../app/http/middlewares/authenticate.js";
+import { authorize } from "../app/http/middlewares/authorize.js";
+import { CreateCommentRequest } from "../app/http/requests/comments/create.request.js";
+import { UpdateCommentRequest } from "../app/http/requests/comments/update.request.js";
+import { CreateTaskRequest } from "../app/http/requests/tasks/create.request.js";
+import { UpdateTaskRequest } from "../app/http/requests/tasks/update.request.js";
 import { Router } from "express";
 
 const router = Router();

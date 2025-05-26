@@ -1,10 +1,10 @@
 import { PrismaClient, TaskStatus } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
-import { sendErrorResponse, sendSuccessResponse } from "utils/response.format";
-import { TaskResource } from "../resources/TaskResource";
-import { TaskCommentResource } from "../resources/TaskCommentResource";
-import { TaskFilter } from "types/task";
-import { normalizeDueDate } from "utils/date";
+import { sendErrorResponse, sendSuccessResponse } from "../../../utils/response.format.js";
+import { TaskResource } from "../resources/TaskResource.js";
+import { TaskCommentResource } from "../resources/TaskCommentResource.js";
+import { TaskFilter } from "../../../types/task.js";
+import { normalizeDueDate } from "../../../utils/date.js";
 
 
 const prisma = new PrismaClient();

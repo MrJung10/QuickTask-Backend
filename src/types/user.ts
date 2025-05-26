@@ -1,5 +1,5 @@
 import { Role } from "@prisma/client";
-import { ProjectMember } from "./projectMember";
+import { ProjectMember } from "./projectMember.js";
 
 export interface User {
   id: string;

@@ -1,6 +1,6 @@
 import { NextFunction, Request, RequestHandler, Response } from "express";
 import { check, validationResult } from "express-validator";
-import { sendErrorResponse } from "utils/response.format";
+import { sendErrorResponse } from "../../../../utils/response.format.js";
 
 export const UpdateCommentRequest: RequestHandler[] = [
     check("content", "Comment content is required").not().isEmpty(),

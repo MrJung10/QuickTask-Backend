@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { NextFunction, Request, RequestHandler, Response } from "express";
 import { check, validationResult } from "express-validator";
-import { sendErrorResponse } from "utils/response.format";
+import { sendErrorResponse } from "../../../../utils/response.format.js";
 
 const prisma = new PrismaClient();
 

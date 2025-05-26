@@ -1,10 +1,10 @@
-import { ProjectController } from "app/http/controllers/ProjectController";
-import { authenticate } from "app/http/middlewares/authenticate";
-import { authorize } from "app/http/middlewares/authorize";
-import { requireProjectRole } from "app/http/middlewares/authorize-project-roles";
-import { CreateProjectRequest } from "app/http/requests/projects/create.request";
-import { InviteProjectMembersRequest } from "app/http/requests/projects/invite.request";
-import { UpdateProjectRequest } from "app/http/requests/projects/update.request";
+import { ProjectController } from "../app/http/controllers/ProjectController.js";
+import { authenticate } from "../app/http/middlewares/authenticate.js";
+import { authorize } from "../app/http/middlewares/authorize.js";
+import { requireProjectRole } from "../app/http/middlewares/authorize-project-roles.js";
+import { CreateProjectRequest } from "../app/http/requests/projects/create.request.js";
+import { InviteProjectMembersRequest } from "../app/http/requests/projects/invite.request.js";
+import { UpdateProjectRequest } from "../app/http/requests/projects/update.request.js";
 import { Router } from "express";
 
 const router = Router();

@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { RegisterRequest } from "../app/http/requests/auth/register.request";
-import { LoginRequest } from "app/http/requests/auth/login.request";
-import { AuthController } from "app/http/controllers/AuthController";
-import { authenticate } from "app/http/middlewares/authenticate";
+import { RegisterRequest } from "../app/http/requests/auth/register.request.js";
+import { LoginRequest } from "../app/http/requests/auth/login.request.js";
+import { AuthController } from "../app/http/controllers/AuthController.js";
+import { authenticate } from "../app/http/middlewares/authenticate.js";
 
 const router = Router();
 

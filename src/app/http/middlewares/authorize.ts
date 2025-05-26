@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { sendErrorResponse } from 'utils/response.format';
+import { sendErrorResponse } from '../../../utils/response.format.js';
 
 export function authorize(roles: string[]) {
   return (req: Request, res: Response, next: NextFunction): void => {

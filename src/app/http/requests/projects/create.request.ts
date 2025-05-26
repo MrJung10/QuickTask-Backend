@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction, RequestHandler } from "express";
 import { check, validationResult } from "express-validator";
-import { sendErrorResponse } from "utils/response.format";
+import { sendErrorResponse } from "../../../../utils/response.format.js";
 
 export const CreateProjectRequest: RequestHandler[] = [
   check("name", "Name is required").not().isEmpty(),

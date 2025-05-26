@@ -1,5 +1,5 @@
-import { Task } from "./task";
-import { User } from "./user";
+import { Task } from "./task.js";
+import { User } from "./user.js";
 
 export interface TaskComment {
     id: string;

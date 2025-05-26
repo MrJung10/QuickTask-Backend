@@ -1,10 +1,10 @@
 import { PrismaClient, Role } from "@prisma/client";
 import { Request, Response, NextFunction } from 'express';
-import { sendErrorResponse, sendSuccessResponse } from "utils/response.format";
-import { ProjectResource } from "../resources/ProjectResource";
-import { ProjectDetailsResource } from "../resources/ProjectDetailsResource";
-import { MemberInput } from "types/memberInput";
-import { ProjectUpdate } from "types/project";
+import { sendErrorResponse, sendSuccessResponse } from "../../../utils/response.format.js";
+import { ProjectResource } from "../resources/ProjectResource.js";
+import { ProjectDetailsResource } from "../resources/ProjectDetailsResource.js";
+import { MemberInput } from "../../../types/memberInput.js";
+import { ProjectUpdate } from "../../../types/project.js";
 
 const prisma = new PrismaClient();
 export class ProjectController {

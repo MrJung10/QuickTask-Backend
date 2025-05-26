@@ -1,6 +1,6 @@
 import { PrismaClient, Role } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
-import { sendErrorResponse } from "utils/response.format";
+import { sendErrorResponse } from "../../../utils/response.format.js";
 
 const prisma = new PrismaClient();
 
