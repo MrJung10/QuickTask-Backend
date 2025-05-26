@@ -1,9 +1,8 @@
 name: CI/CD - Backend
 
 on:
-  push:
-    branches:
-      - main
+  release:
+    types: [published]
 
 jobs:
   backend:
@@ -80,3 +79,11 @@ jobs:
           docker build -t quicktask-api -f Dockerfile .
           docker tag quicktask-api ${{ secrets.DOCKER_HUB_USERNAME }}/quicktask-api:latest
           docker push ${{ secrets.DOCKER_HUB_USERNAME }}/quicktask-api:latest
+
+      - name: Deploy to Render
+        run: |
+          curl -X POST \
+          -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+          -H "Content-Type: application/json" \
+          -d '{"image":"${{ secrets.DOCKER_HUB_USERNAME }}/quicktask-api:latest"}' \
+          https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/deploys
