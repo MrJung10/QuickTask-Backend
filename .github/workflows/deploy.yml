@@ -1,6 +1,9 @@
 name: CI/CD - Backend
 
 on:
+  push:
+    branches:
+      - main
   release:
     types: [published]
 
@@ -31,45 +34,39 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: List files in repository
-        run: ls -la
+        uses: actions/checkout@v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 18
 
+      - name: Cache Node.js modules
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
-      # - name: Run lint (optional, comment out if not used)
-      #   run: |
-      #     if npm run lint; then
-      #       echo "Lint passed"
-      #     else
-      #       echo "Lint failed"
-      #       exit 1
-      #     fi
-      #   continue-on-error: true
-
-      - name: Run tests (skipped if no tests are defined)
+      - name: Run tests
         run: |
           if [ -f "package.json" ] && grep -q '"test":' package.json; then
             echo "Running tests..."
-            npm test || true
+            npm test
           else
             echo "No tests found. Skipping..."
           fi
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/quicktask
+          REDIS_URL: redis://localhost:6379
 
-      - name: Build project (optional if you have build script)
-        run: |
-          if npm run build; then
-            echo "Build passed"
-          else
-            echo "No build script or failed. Skipping..."
-          fi
+      - name: Build project
+        run: npm run build
+        if: contains(fromJSON('["build"]'), toJSON(hashFiles('package.json')))
 
       - name: Log in to Docker Hub
         run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
@@ -79,11 +76,11 @@ jobs:
           docker build -t quicktask-api -f Dockerfile .
           docker tag quicktask-api ${{ secrets.DOCKER_HUB_USERNAME }}/quicktask-api:latest
           docker push ${{ secrets.DOCKER_HUB_USERNAME }}/quicktask-api:latest
+          echo "Docker image pushed successfully"
 
       - name: Deploy to Render
         run: |
           curl -X POST \
           -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
-          -H "Content-Type: application/json" \
-          -d '{"image":"${{ secrets.DOCKER_HUB_USERNAME }}/quicktask-api:latest"}' \
+          -H "Accept: application/json" \
           https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/deploys
