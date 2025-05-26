@@ -212,43 +212,109 @@ export class TaskController {
         try {
           const { taskId } = req.params;
           const user = req.user;
-
+      
           if (!taskId) {
             sendErrorResponse(res, 'Task ID is required', 400);
             return;
           }
-    
+      
           const task = await prisma.task.findUnique({ where: { id: taskId } });
-    
+      
           if (!task) {
             sendErrorResponse(res, 'Task not found', 404);
             return;
           }
-    
+      
           const isAdminOrAssignee =
             user?.role === 'ADMIN' || task.assigneeId === user?.id;
-    
+      
           if (!isAdminOrAssignee) {
             sendErrorResponse(res, 'Unauthorized', 403);
             return;
           }
-
+      
+          await prisma.task.update({
+            where: { id: taskId },
+            data: {
+              title: req.body.title,
+              description: req.body.description,
+              priority: req.body.priority,
+              status: req.body.status,
+              dueDate: new Date(req.body.dueDate),
+              assigneeId: req.body.assigneeId,
+            },
+          });
+      
+          // Fetch the full updated task with relations
           const fullTask = await prisma.task.findUnique({
-            where: { id: task.id },
+            where: { id: taskId },
             include: {
               assignee: true,
               comments: true,
             },
           });
-
+      
           if (!fullTask) {
+            sendErrorResponse(res, 'Task not found after update', 404);
+            return;
+          }
+      
+          const transformed = TaskResource.toObject(fullTask);
+      
+          sendSuccessResponse(res, transformed, 'Task updated');
+        } catch (error) {
+          next(error);
+        }
+      }
+      
+
+      static async updateStatus(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+          const { taskId } = req.params;
+          const { status } = req.body;
+          const user = req.user;
+      
+          if (!taskId) {
+            sendErrorResponse(res, 'Task ID is required', 400);
+            return;
+          }
+      
+          if (!status) {
+            sendErrorResponse(res, 'Status is required', 400);
+            return;
+          }
+      
+          const task = await prisma.task.findUnique({ where: { id: taskId } });
+      
+          if (!task) {
             sendErrorResponse(res, 'Task not found', 404);
             return;
           }
-          
+      
+          const isAdminOrAssignee =
+            user?.role === 'ADMIN' || task.assigneeId === user?.id;
+      
+          if (!isAdminOrAssignee) {
+            sendErrorResponse(res, 'Unauthorized', 403);
+            return;
+          }
+      
+          const updatedTask = await prisma.task.update({
+            where: { id: taskId },
+            data: { status },
+          });
+      
+          const fullTask = await prisma.task.findUnique({
+            where: { id: updatedTask.id },
+            include: {
+              assignee: true,
+              comments: true,
+            },
+          });
+      
           const transformed = TaskResource.toObject(fullTask);
-    
-          sendSuccessResponse(res, transformed, 'Task updated');
+      
+          sendSuccessResponse(res, transformed, 'Task status updated');
         } catch (error) {
           next(error);
         }

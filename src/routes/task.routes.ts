@@ -18,6 +18,7 @@ router.post('/:id/tasks', CreateTaskRequest, authenticate, authorize([Role.ADMIN
 router.get('/:id/tasks', authenticate, authorize([Role.ADMIN, Role.MEMBER]), TaskController.index);
 router.get('/:id/tasks/:taskId', authenticate, authorize([Role.ADMIN, Role.MEMBER]), TaskController.show);
 router.put('/:id/tasks/:taskId', UpdateTaskRequest, authenticate, authorize([Role.ADMIN, Role.MEMBER]), TaskController.update);
+router.patch('/:id/tasks/:taskId/status', authenticate, authorize([Role.ADMIN, Role.MEMBER]), TaskController.updateStatus);
 router.delete('/:id/tasks/:taskId', authenticate, authorize([Role.ADMIN]), TaskController.delete);
 
 router.post('/:id/tasks/:taskId/comments', CreateCommentRequest, authenticate, authorize([Role.ADMIN, Role.MEMBER]), TaskController.addComment);
