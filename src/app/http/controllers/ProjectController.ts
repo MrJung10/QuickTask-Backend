@@ -128,6 +128,11 @@ export class ProjectController {
             sendErrorResponse(res, 'Unauthorized: User not found', 401);
             return;
           }
+
+          if (members.length === 0) {
+            sendErrorResponse(res, 'At least one member is required', 400);
+            return;
+          }
       
           const project = await prisma.project.create({
             data: {
@@ -201,6 +206,11 @@ export class ProjectController {
       
           if (!existing || existing.ownerId !== user?.id) {
             sendErrorResponse(res, 'Unauthorized or Project not found', 403);
+            return;
+          }
+
+          if (members.length === 0) {
+            sendErrorResponse(res, 'At least one member is required', 400);
             return;
           }
       
