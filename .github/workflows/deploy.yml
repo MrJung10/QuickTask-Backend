@@ -6,16 +6,6 @@ on:
       - main
   release:
     types: [published]
-  workflow_dispatch: # Allows manual triggering
-    inputs:
-      run_migrations:
-        description: 'Run migrations only'
-        required: false
-        default: 'false'
-      run_seeder:
-        description: 'Run seeder only'
-        required: false
-        default: 'false'
 
 jobs:
   backend:
@@ -61,35 +51,6 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-
-      - name: Generate Prisma client
-        run: npx prisma generate
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-
-      - name: Run migrations
-        if: ${{ github.event_name != 'workflow_dispatch' || github.event.inputs.run_migrations == 'true' }}
-        run: npx prisma migrate deploy
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-
-      - name: Run seeder
-        if: ${{ github.event_name != 'workflow_dispatch' || github.event.inputs.run_seeder == 'true' }}
-        run: npm run seed
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-
-      # - name: Run tests
-      #   run: |
-      #     if [ -f "package.json" ] && grep -q '"test":' package.json; then
-      #       echo "Running tests..."
-      #       npm test
-      #     else
-      #       echo "No tests found. Skipping..."
-      #     fi
-      #   env:
-      #     DATABASE_URL: postgresql://postgres:postgres@localhost:5432/quicktask
-      #     REDIS_URL: redis://localhost:6379
 
       - name: Build project
         run: npm run build
