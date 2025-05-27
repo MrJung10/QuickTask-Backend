@@ -12,7 +12,7 @@ const corsOptions: CorsOptions = {
   allowedHeaders: ["Content-Type", "Authorization"],
 
   // Allow credentials (this can be set to false if origin is "*")
-  credentials: true,
+  credentials: false,
 
   // Alternatively, you can use a function to allow all origins (uncomment below)
   // origin: (origin, callback) => {
