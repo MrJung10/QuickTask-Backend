@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
@@ -22,6 +22,9 @@ app.use(limiter);
 
 // Routes
 app.use('/api', router);
+app.get('/ping', (req: Request, res: Response) => {
+    res.send('OK');
+});
 
 // Global Error handler
 app.use(errorHandler);
