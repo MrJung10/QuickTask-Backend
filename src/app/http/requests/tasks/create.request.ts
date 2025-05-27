@@ -8,8 +8,6 @@ const prisma = new PrismaClient();
 export const CreateTaskRequest: RequestHandler[] = [
   check("title", "Title is required").not().isEmpty(),
   check("priority", "Priority is required").not().isEmpty(),
-  check("priority", "Invalid priority. Priority must be one of LOW, MEDIUM, HIGH, CRITICAL")
-    .isIn(["LOW", "MEDIUM", "HIGH", "CRITICAL"]),
   check("status", "Invalid task status. Status must be one of TODO, IN_PROGRESS, REVIEW, DONE")
     .optional()
     .isIn(["TODO", "IN_PROGRESS", "REVIEW", "DONE"]),
