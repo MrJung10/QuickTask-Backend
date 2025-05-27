@@ -169,24 +169,7 @@ export class ProjectController {
             return;
           }
 
-        const data = {
-            id: project.id,
-            name: project.name,
-            description: project.description,
-            owner: {
-                id: project.ownerId,
-                name: project.owner.name,
-                email: project.owner.email,
-            },
-            members: project.members.map((member: { userId: string; user: { id: string; name: string; email: string; role: Role}; role: Role }) => ({
-                id: member.userId,
-                name: member.user.name,
-                email: member.user.email,
-                role: member.role,
-            })),
-        }
-
-        sendSuccessResponse(res, data, 'Project created successfully.');
+        sendSuccessResponse(res, ProjectResource.toJSON(project), 'Project created successfully.');
         return;
         } catch (error) {
           next(error);
@@ -201,7 +184,9 @@ export class ProjectController {
       
           const existing = await prisma.project.findUnique({
             where: { id },
-            include: { members: true },
+            include: { members: {
+              include: { user: true },
+            } },
           });
       
           if (!existing || existing.ownerId !== user?.id) {
@@ -270,22 +255,16 @@ export class ProjectController {
             return tx.project.findUnique({
               where: { id },
               include: {
-                members: true,
+                members: {
+                  include: {
+                    user: true,
+                  },
+                },
               },
             });
           });
       
-          const data = {
-            id: updated?.id,
-            name: updated?.name,
-            description: updated?.description,
-            members: updated?.members.map((m) => ({
-              userId: m.userId,
-              role: m.role,
-            })),
-          };
-      
-          sendSuccessResponse(res, data, 'Project updated successfully');
+          sendSuccessResponse(res, ProjectResource.toJSON(updated), 'Project updated successfully');
         } catch (error) {
           next(error);
         }
